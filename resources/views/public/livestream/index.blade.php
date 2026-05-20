@@ -111,7 +111,7 @@
                 <textarea
                     name="message"
                     rows="4"
-                    placeholder="Your testimony or prayer request..."
+                    placeholder="Send Your Testimony prayer request..."
                     class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-gold outline-none"
                     required>{{ old('message') }}</textarea>
                 <button type="submit" class="w-full py-3 bg-gold text-black font-bold rounded hover:bg-yellow-600 transition">
