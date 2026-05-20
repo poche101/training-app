@@ -4,8 +4,10 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\LivestreamController;
+use App\Http\Controllers\TestimonyController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\LivestreamController;
+use App\Http\Controllers\Admin\LivestreamController as AdminLivestreamController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\AnnouncementController;
@@ -14,9 +16,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
+// ─── Public Routes (No Auth Required) ───────────────────────────────────────
+Route::get('/livestreams', [LivestreamController::class, 'index'])->name('livestreams');
+Route::get('/livestreams/{livestream}', [LivestreamController::class, 'show'])->name('stream.view');
+Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimony.submit');
+
+
 // ─── Guest Routes (Root Redirects Here) ─────────────────────────────────────
 Route::middleware('guest')->group(function () {
-    // Making the bare root landing page auto-redirect to login
     Route::get('/', function () {
         return redirect()->route('login');
     });
@@ -30,8 +37,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 
-// ─── Email Verification Intermediary Routes ─────────────────────────────────
-// Users end up here if they are authenticated but haven't clicked their email link yet
+// ─── Email Verification Intermediary Routes ──────────────────────────────────
 Route::middleware('auth')->group(function () {
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
@@ -52,15 +58,8 @@ Route::middleware('auth')->group(function () {
 // ─── Fully Authenticated & Verified Application Wrapper ─────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Post-Login Target Landing Page: Loads home blade now that they are verified
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-    // Protected Stream & Event Browsing
-    // These routes are inside the ['auth', 'verified'] group
-// BUT NOT inside the ['admin'] middleware group
-Route::get('/livestreams', [HomeController::class, 'livestreams'])->name('livestreams');
-Route::get('/livestreams/{livestream}', [HomeController::class, 'streamShow'])->name('stream.view');
-Route::get('/events', [HomeController::class, 'events'])->name('events');
+    Route::get('/events', [HomeController::class, 'events'])->name('events');
 
     // ─── Member Sub-Routes ───────────────────────────────────────────────────
     Route::prefix('member')->name('member.')->group(function () {
@@ -82,10 +81,15 @@ Route::get('/events', [HomeController::class, 'events'])->name('events');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/analytics', [DashboardController::class, 'analytics'])->name('analytics');
 
+        // Testimonies
+        Route::get('/testimonies', [App\Http\Controllers\Admin\TestimonyController::class, 'index'])->name('testimonies.index');
+        Route::patch('/testimonies/{testimony}/approve', [App\Http\Controllers\Admin\TestimonyController::class, 'approve'])->name('testimonies.approve');
+        Route::delete('/testimonies/{testimony}', [App\Http\Controllers\Admin\TestimonyController::class, 'destroy'])->name('testimonies.destroy');
+
         // Livestreams
-        Route::resource('livestreams', LivestreamController::class);
-        Route::post('/livestreams/{livestream}/go-live', [LivestreamController::class, 'goLive'])->name('livestreams.go-live');
-        Route::post('/livestreams/{livestream}/end', [LivestreamController::class, 'endStream'])->name('livestreams.end');
+        Route::resource('livestreams', AdminLivestreamController::class);
+        Route::post('/livestreams/{livestream}/go-live', [AdminLivestreamController::class, 'goLive'])->name('livestreams.go-live');
+        Route::post('/livestreams/{livestream}/end', [AdminLivestreamController::class, 'endStream'])->name('livestreams.end');
 
         // Resources
         Route::resource('resources', ResourceController::class)->except(['show', 'edit', 'update']);

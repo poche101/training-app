@@ -9,20 +9,20 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'admin']);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware(['auth', 'admin']);
+    // }
 
     public function index()
     {
         $announcements = Announcement::with('creator')->latest()->paginate(15);
-        return view('admin.announcements.index', compact('announcements'));
+        return view('admin.announcement.index', compact('announcements'));
     }
 
     public function create()
     {
-        return view('admin.announcements.create');
+        return view('admin.announcement.create');
     }
 
     public function store(Request $request)

@@ -114,6 +114,54 @@
             </tr>
             @endforeach
         </tbody>
+
+        {{-- Testimonies --}}
+<div class="admin-card" style="padding:20px; margin-top:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-size:14px; font-weight:600; color:white;">🙏 Recent Testimonies</h3>
+        <a href="{{ route('admin.testimonies.index') }}" style="font-size:11px; color:#c9a227;">View all →</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($recentTestimonies ?? [] as $testimony)
+            <tr>
+                <td style="font-weight:500; color:white;">{{ $testimony->author_name }}</td>
+                <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    {{ $testimony->content }}
+                </td>
+                <td>
+                    <span style="font-size:11px; padding:2px 8px; border-radius:999px;
+                        {{ $testimony->is_approved
+                            ? 'background:rgba(34,197,94,0.1); color:#86efac;'
+                            : 'background:rgba(251,191,36,0.1); color:#fbbf24;' }}">
+                        {{ $testimony->is_approved ? 'Approved' : 'Pending' }}
+                    </span>
+                </td>
+                <td>{{ $testimony->created_at->diffForHumans() }}</td>
+                <td>
+                    <a href="{{ route('admin.testimonies.index') }}"
+                       style="font-size:11px; color:#c9a227;">
+                        Review →
+                    </a>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" style="text-align:center; color:#6b7280;">No testimonies yet.</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
     </table>
 </div>
 

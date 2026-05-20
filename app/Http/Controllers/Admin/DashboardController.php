@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\Livestream;
 use App\Models\Resource;
 use App\Models\User;
+use App\Models\Testimony; // 1. IMPORT THE MODEL
 
 class DashboardController extends Controller
 {
@@ -34,6 +35,9 @@ class DashboardController extends Controller
         $upcomingEvents = Event::upcoming()->take(3)->get();
         $liveLivestream = Livestream::live()->latest()->first();
 
+        // 2. FETCH THE DATA
+        $recentTestimonies = Testimony::latest()->take(5)->get();
+
         // Chart data: registrations per month (last 6 months)
         $registrationData = [];
         for ($i = 5; $i >= 0; $i--) {
@@ -46,8 +50,15 @@ class DashboardController extends Controller
             ];
         }
 
+        // 3. VARIABLE IS NOW DEFINED FOR COMPACT()
         return view('admin.dashboard', compact(
-            'stats', 'recentUsers', 'activityLogs', 'upcomingEvents', 'liveLivestream', 'registrationData'
+            'stats',
+            'recentUsers',
+            'activityLogs',
+            'upcomingEvents',
+            'liveLivestream',
+            'registrationData',
+            'recentTestimonies'
         ));
     }
 
