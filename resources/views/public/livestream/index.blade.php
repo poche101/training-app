@@ -80,7 +80,7 @@
 
     {{-- Testimony & Prayer Request Section --}}
     <div class="mt-20 p-8 rounded-xl bg-gray-900 border border-gray-700 max-w-2xl mx-auto">
-        <h2 class="text-2xl text-white font-bold mb-6 text-center">Share a Testimony or Prayer Request</h2>
+        <h2 class="text-2xl text-white font-bold mb-6 text-center">Share Your Testimony or Prayer Request</h2>
 
         @if(session('success'))
             <div class="p-4 mb-6 text-center text-green-400 bg-green-900/20 border border-green-600/30 rounded-lg">
