@@ -215,39 +215,56 @@
                     <p class="text-xs text-gray-400">Secure your virtual pass for A Day Of Blessings Outreach.</p>
                 </div>
 
-                <!-- Registration Target Action Form -->
-                <form action="{{ route('register') }}" method="POST" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Full Name</label>
-                        <input type="text" name="full_name" required placeholder="John Doe"
-                               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
-                    </div>
+              @if(session('success'))
+    <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #a7f3d0; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+        <strong>🎉 Success:</strong> {{ session('success') }}
+    </div>
+@endif
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Email Address</label>
-                        <input type="email" name="email" required placeholder="johndoe@example.com"
-                               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
-                    </div>
+<form action="{{ route('member.event.register') }}" method="POST" class="space-y-4">
+    @csrf
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Phone Number</label>
-                        <input type="tel" name="phone" placeholder="+1 (555) 000-0000"
-                               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
-                    </div>
+    @if ($errors->any())
+        <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <strong>⚠️ Registration Failed:</strong>
+            <ul style="margin-top: 4px; padding-left: 20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Country</label>
-                        <input type="text" name="country" required placeholder="United States"
-                               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
-                    </div>
+    <div>
+        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Full Name</label>
+        <input type="text" name="full_name" required placeholder="John Doe"
+               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+    </div>
 
-                    <div class="pt-2">
-                        <button type="submit" class="w-full btn-gold py-3 text-sm font-semibold inline-flex justify-center items-center gap-2 cursor-pointer shadow-lg shadow-gold/10">
-                            Confirm Attendance & Register
-                        </button>
-                    </div>
-                </form>
+    <div>
+        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Email Address</label>
+        <input type="email" name="email" required placeholder="johndoe@example.com"
+               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Phone Number</label>
+        <input type="tel" name="phone" placeholder="+1 (555) 000-0000"
+               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Country</label>
+        <input type="text" name="country" required placeholder="United States"
+               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+    </div>
+
+    <div class="pt-2">
+        <button type="submit" class="w-full btn-gold py-3 text-sm font-semibold inline-flex justify-center items-center gap-2 cursor-pointer shadow-lg shadow-gold/10">
+            Confirm Attendance & Register
+        </button>
+    </div>
+</form>
             </div>
         </div>
     </div>
