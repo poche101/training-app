@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -41,8 +42,8 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended('/admin/dashboard');
         }
 
-        // Fallback for regular users (Using a raw string path so it never crashes)
-        return redirect()->intended('/');
+        // Fallback for regular users (Redirects straight to /home)
+        return redirect()->intended('/home');
         // ───────────────────────────────────────────────────────────────────
     }
 

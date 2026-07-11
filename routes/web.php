@@ -12,15 +12,16 @@ use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\EventRegistrationController as AdminEventRegistrationController; // IMPORT THE NEW ADMIN CONTROLLER
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\EventRegistrationController;
 use Illuminate\Http\Request;
 
 // ─── Public Routes (No Auth Required) ───────────────────────────────────────
 Route::get('/livestreams', [LivestreamController::class, 'index'])->name('livestreams');
 Route::get('/livestreams/{livestream}', [LivestreamController::class, 'show'])->name('stream.view');
 Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimony.submit');
-
 
 // ─── Guest Routes (Root Redirects Here) ─────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ─── Member Sub-Routes ───────────────────────────────────────────────────
     Route::prefix('member')->name('member.')->group(function () {
+        Route::post('/event-register', [EventRegistrationController::class, 'store'])->name('event.register');
         Route::get('/dashboard', [MemberController::class, 'dashboard'])->name('dashboard');
         Route::get('/resources', [MemberController::class, 'resources'])->name('resources');
         Route::get('/resources/{resource}/download', [MemberController::class, 'downloadResource'])->name('resources.download');
@@ -98,6 +100,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Events
         Route::resource('events', EventController::class);
+
+        // Event Registrations
+        Route::get('/event-registrations/export', [AdminEventRegistrationController::class, 'export'])->name('event-registrations.export');
+Route::get('/event-registrations', [AdminEventRegistrationController::class, 'index'])->name('event-registrations.index');
 
         // Announcements
         Route::resource('announcements', AnnouncementController::class)->except(['show']);

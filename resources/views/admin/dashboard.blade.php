@@ -20,6 +20,7 @@
     @php
     $statCards = [
         ['label'=>'Total Members', 'value'=>number_format($stats['total_users']), 'icon'=>'👥', 'color'=>'#c9a227'],
+        ['label'=>'Event Registrations', 'value'=>number_format($stats['event_registrations'] ?? 0), 'icon'=>'🎟️', 'color'=>'#fb923c'],
         ['label'=>'Total Streams', 'value'=>$stats['total_streams'], 'icon'=>'📺', 'color'=>'#60a5fa'],
         ['label'=>'Live Now', 'value'=>$stats['live_streams'], 'icon'=>'🔴', 'color'=>'#ef4444'],
         ['label'=>'Resources', 'value'=>$stats['total_resources'], 'icon'=>'📚', 'color'=>'#34d399'],
@@ -88,7 +89,7 @@
 </div>
 
 {{-- Activity Log --}}
-<div class="admin-card" style="padding:20px;">
+<div class="admin-card" style="padding:20px; margin-bottom:20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <h3 style="font-size:14px; font-weight:600; color:white;">📋 Recent Activity</h3>
         <a href="{{ route('admin.activity-logs') }}" style="font-size:11px; color:#c9a227;">View all →</a>
@@ -114,9 +115,48 @@
             </tr>
             @endforeach
         </tbody>
+    </table>
+</div>
 
-        {{-- Testimonies --}}
-<div class="admin-card" style="padding:20px; margin-top:20px;">
+{{-- Event Registrations (A Day of Blessings) --}}
+<div class="admin-card" style="padding:20px; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-size:14px; font-weight:600; color:white;">🎟️ Event Registrations (A Day Of Blessings)</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Country</th>
+                <th>Registered</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($eventRegistrations ?? [] as $registration)
+            <tr>
+                <td style="font-weight:500; color:white;">{{ $registration->full_name }}</td>
+                <td style="color:#9ca3af;">{{ $registration->email }}</td>
+                <td style="color:#9ca3af;">{{ $registration->phone ?? 'N/A' }}</td>
+                <td>
+                    <span style="font-size:11px; padding:2px 8px; border-radius:999px; background:rgba(96,165,250,0.1); color:#93c5fd;">
+                        {{ $registration->country }}
+                    </span>
+                </td>
+                <td>{{ $registration->created_at->diffForHumans() }}</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" style="text-align:center; color:#6b7280; padding:16px;">No event registrations yet.</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+{{-- Testimonies --}}
+<div class="admin-card" style="padding:20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <h3 style="font-size:14px; font-weight:600; color:white;">🙏 Recent Testimonies</h3>
         <a href="{{ route('admin.testimonies.index') }}" style="font-size:11px; color:#c9a227;">View all →</a>
@@ -148,20 +188,17 @@
                 </td>
                 <td>{{ $testimony->created_at->diffForHumans() }}</td>
                 <td>
-                    <a href="{{ route('admin.testimonies.index') }}"
-                       style="font-size:11px; color:#c9a227;">
+                    <a href="{{ route('admin.testimonies.index') }}" style="font-size:11px; color:#c9a227;">
                         Review →
                     </a>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="text-align:center; color:#6b7280;">No testimonies yet.</td>
+                <td colspan="5" style="text-align:center; color:#6b7280; padding:16px;">No testimonies yet.</td>
             </tr>
             @endforelse
         </tbody>
-    </table>
-</div>
     </table>
 </div>
 

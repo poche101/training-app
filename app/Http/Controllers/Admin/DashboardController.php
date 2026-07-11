@@ -10,33 +10,36 @@ use App\Models\Event;
 use App\Models\Livestream;
 use App\Models\Resource;
 use App\Models\User;
-use App\Models\Testimony; // 1. IMPORT THE MODEL
+use App\Models\Testimony;
+use App\Models\EventRegistration; // 1. IMPORT THE EVENT REGISTRATION MODEL
 
 class DashboardController extends Controller
 {
-    // ─── REMOVED LEGACY __CONSTRUCT MIDDLEWARE METODS ───────────────────
+    // ─── REMOVED LEGACY __CONSTRUCT MIDDLEWARE METHODS ───────────────────
     // Middleware configurations belong inside routes/web.php in modern Laravel!
 
     public function index()
     {
         $stats = [
-            'total_users'      => User::count(),
-            'total_streams'    => Livestream::count(),
-            'live_streams'     => Livestream::live()->count(),
-            'total_resources'  => Resource::count(),
-            'total_events'     => Event::count(),
-            'upcoming_events'  => Event::upcoming()->count(),
-            'total_downloads'  => Resource::sum('download_count'),
-            'total_attendance' => Attendance::count(),
+            'total_users'       => User::count(),
+            'total_streams'     => Livestream::count(),
+            'live_streams'      => Livestream::live()->count(),
+            'total_resources'   => Resource::count(),
+            'total_events'      => Event::count(),
+            'upcoming_events'   => Event::upcoming()->count(),
+            'total_downloads'   => Resource::sum('download_count'),
+            'total_attendance'  => Attendance::count(),
+            'event_registrations' => EventRegistration::count(), // Added total count stat
         ];
 
-        $recentUsers    = User::latest()->take(5)->get();
-        $activityLogs   = ActivityLog::with('admin')->latest()->take(10)->get();
-        $upcomingEvents = Event::upcoming()->take(3)->get();
-        $liveLivestream = Livestream::live()->latest()->first();
-
-        // 2. FETCH THE DATA
+        $recentUsers       = User::latest()->take(5)->get();
+        $activityLogs      = ActivityLog::with('admin')->latest()->take(10)->get();
+        $upcomingEvents    = Event::upcoming()->take(3)->get();
+        $liveLivestream    = Livestream::live()->latest()->first();
         $recentTestimonies = Testimony::latest()->take(5)->get();
+
+        // 2. FETCH THE NEW EVENT REGISTRATIONS (Latest 10 for dashboard overview)
+        $eventRegistrations = EventRegistration::latest()->take(10)->get();
 
         // Chart data: registrations per month (last 6 months)
         $registrationData = [];
@@ -50,7 +53,7 @@ class DashboardController extends Controller
             ];
         }
 
-        // 3. VARIABLE IS NOW DEFINED FOR COMPACT()
+        // 3. VARIABLE IS PASSED INTO COMPACT()
         return view('admin.dashboard', compact(
             'stats',
             'recentUsers',
@@ -58,7 +61,8 @@ class DashboardController extends Controller
             'upcomingEvents',
             'liveLivestream',
             'registrationData',
-            'recentTestimonies'
+            'recentTestimonies',
+            'eventRegistrations'
         ));
     }
 

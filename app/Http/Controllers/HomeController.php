@@ -51,11 +51,19 @@ class HomeController extends Controller
     }
 
     // 4. Public Events Directory
-    public function events()
-    {
-        $upcoming = Event::upcoming()->get();
-        $past     = Event::where('end_date', '<', now())->latest()->paginate(9);
+   public function events()
+{
+    // 1. Fetch the upcoming events (assuming this is how you query them)
+    $upcoming = \App\Models\Event::where('start_date', '>=', now())
+                     ->orderBy('start_date', 'asc')
+                     ->get();
 
-        return view('public.events', compact('upcoming', 'past'));
-    }
+    // 2. Safely grab RSVPs if the user is logged in, otherwise default to an empty collection
+    $myRsvps = auth()->check()
+        ? auth()->user()->rsvps()->pluck('event_id')
+        : collect();
+
+    // 3. Pass both to the view
+    return view('public.events', compact('upcoming', 'myRsvps'));
+}
 }
