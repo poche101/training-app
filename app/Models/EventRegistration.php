@@ -6,5 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class EventRegistration extends Model
 {
-    protected $fillable = ['full_name', 'email', 'phone', 'country'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'full_name',
+        'email',
+        'phone',
+        'country',
+        'prayer_request'
+    ];
 }

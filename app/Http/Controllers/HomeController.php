@@ -20,13 +20,13 @@ class HomeController extends Controller
     $announcements  = Announcement::latest()->take(6)->get();
     $testimonies    = Testimony::latest()->take(6)->get();
 
-    return view('public.home', compact(
-        'liveLivestream',
-        'upcomingStream',
-        'upcomingEvents',
-        'announcements',
-        'testimonies'
-    ));
+   return view('welcome', compact(
+    'liveLivestream',
+    'upcomingStream',
+    'upcomingEvents',
+    'announcements',
+    'testimonies'
+));
 }
     // 2. Public Livestreams Directory (http://127.0.0.1:8000/livestreams)
    public function livestreams()

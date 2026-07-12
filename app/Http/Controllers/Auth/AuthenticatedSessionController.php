@@ -39,11 +39,11 @@ class AuthenticatedSessionController extends Controller
         // ─── FIXED REDIRECT LOGIC ──────────────────────────────────────────
         // Check if the user is an admin by checking their database role column
         if ($user->role === 'admin') {
-            return redirect()->intended('/admin/dashboard');
+            return redirect('/admin/dashboard');
         }
 
-        // Fallback for regular users (Redirects straight to /home)
-        return redirect()->intended('/home');
+        // Fallback for regular users - forcefully sent to /welcome
+        return redirect('/welcome');
         // ───────────────────────────────────────────────────────────────────
     }
 
@@ -56,6 +56,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/welcome');
     }
 }

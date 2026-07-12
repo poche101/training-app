@@ -19,6 +19,7 @@
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Country</th>
+                <th>Prayer Request</th>
                 <th>Registered At</th>
             </tr>
         </thead>
@@ -33,11 +34,20 @@
                         {{ $registration->country }}
                     </span>
                 </td>
+                <td>
+                    @if($registration->prayer_request)
+                        <div style="max-width: 250px; max-height: 60px; overflow-y: auto; font-size: 13px; color: #d1d5db; line-height: 1.4; padding-right: 4px;" class="admin-table-scrollbar">
+                            {{ $registration->prayer_request }}
+                        </div>
+                    @else
+                        <span style="color: #4b5563; font-style: italic; font-size: 13px;">None</span>
+                    @endif
+                </td>
                 <td>{{ $registration->created_at->format('d M Y, H:i') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="text-align:center; color:#6b7280; padding:16px;">No registrations found.</td>
+                <td colspan="6" style="text-align:center; color:#6b7280; padding:16px;">No registrations found.</td>
             </tr>
             @endforelse
         </tbody>
@@ -47,4 +57,12 @@
         {{ $registrations->links() }}
     </div>
 </div>
+
+<style>
+    /* Minor utility style to keep internal prayer text scrollbars looking clean */
+    .admin-table-scrollbar::-webkit-scrollbar { width: 4px; }
+    .admin-table-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .admin-table-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 2px; }
+    .admin-table-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.5); }
+</style>
 @endsection

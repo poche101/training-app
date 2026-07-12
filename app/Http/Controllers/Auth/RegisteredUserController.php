@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // Updated redirect targeted to send new users straight to the home path
-        return redirect()->to('/home')
+        return redirect()->to('/welcome')
                          ->with('success', 'Welcome to OFCC! Your account has been created.');
     }
 }

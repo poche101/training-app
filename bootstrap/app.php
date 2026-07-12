@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request; // <-- add this
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +13,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-        // ─── Register your admin middleware shortcut here ───────────────
+        $middleware->redirectTo(
+            guests: '/login',
+            users: function (Request $request) {
+                $user = $request->user();
+                return $user && $user->isAdmin()
+                    ? route('admin.dashboard')
+                    : route('member.dashboard');
+            }
+        );
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);

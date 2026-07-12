@@ -1,34 +1,42 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth; // <-- CRITICAL: Imported to prevent fallback crashes
+use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+// Public Controllers
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\LivestreamController;
 use App\Http\Controllers\TestimonyController;
+use App\Http\Controllers\EventRegistrationController;
+
+// Auth Controllers
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+
+// Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LivestreamController as AdminLivestreamController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\EventRegistrationController as AdminEventRegistrationController; // IMPORT THE NEW ADMIN CONTROLLER
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Http\Controllers\EventRegistrationController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\EventRegistrationController as AdminEventRegistrationController;
+
+// ─── Core Landing & Authentication Redirection Logic ──────────────────────
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
 // ─── Public Routes (No Auth Required) ───────────────────────────────────────
 Route::get('/livestreams', [LivestreamController::class, 'index'])->name('livestreams');
 Route::get('/livestreams/{livestream}', [LivestreamController::class, 'show'])->name('stream.view');
 Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimony.submit');
 
-// ─── Guest Routes (Root Redirects Here) ─────────────────────────────────────
+// ─── Guest Routes (Only Unauthenticated Visitors) ───────────────────────────
 Route::middleware('guest')->group(function () {
-    Route::get('/', function () {
-        return redirect()->route('login');
-    });
-
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -36,7 +44,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
 
 // ─── Email Verification Intermediary Routes ──────────────────────────────────
 Route::middleware('auth')->group(function () {
@@ -46,7 +53,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
-        return redirect()->route('home');
+        return redirect()->route('welcome');
     })->middleware('signed')->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {
@@ -55,11 +62,23 @@ Route::middleware('auth')->group(function () {
     })->middleware('throttle:6,1')->name('verification.send');
 });
 
-
 // ─── Fully Authenticated & Verified Application Wrapper ─────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    /**
+     * The Main Event Page (A Day Of Blessings layout)
+     * Resides inside resources/views/public/home.blade.php
+     */
+    Route::get('/home', function () {
+        return view('public.home');
+    })->name('home');
+
+    /**
+     * The Public Platform Dashboard (General update layout)
+     * Feeds calendar events, announcements, and testimonies from the database.
+     */
+    Route::get('/welcome', [HomeController::class, 'index'])->name('welcome');
+
     Route::get('/events', [HomeController::class, 'events'])->name('events');
 
     // ─── Member Sub-Routes ───────────────────────────────────────────────────
@@ -78,7 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // ─── Admin Sub-Routes ────────────────────────────────────────────────────
-    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/analytics', [DashboardController::class, 'analytics'])->name('analytics');
@@ -103,7 +122,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Event Registrations
         Route::get('/event-registrations/export', [AdminEventRegistrationController::class, 'export'])->name('event-registrations.export');
-Route::get('/event-registrations', [AdminEventRegistrationController::class, 'index'])->name('event-registrations.index');
+        Route::get('/event-registrations', [AdminEventRegistrationController::class, 'index'])->name('event-registrations.index');
 
         // Announcements
         Route::resource('announcements', AnnouncementController::class)->except(['show']);
