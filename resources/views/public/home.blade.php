@@ -42,7 +42,7 @@
 
                 <h1 class="font-cinzel font-bold text-white leading-[1.1] tracking-tight mb-4"
                     style="font-size: clamp(2.25rem, 7vw, 4.25rem);">
-                    A Day Of<br>
+                    A Time Of<br>
                     <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Blessings</span>
                 </h1>
 
@@ -74,7 +74,7 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button type="button" onclick="openRegistrationModal()"
                        class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                        🎟️ Register for A Day Of Blessings
+                        🎟️ Register for A Time Of Blessings
                     </button>
                 </div>
             </div>
