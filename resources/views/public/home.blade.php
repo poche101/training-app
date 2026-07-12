@@ -112,7 +112,7 @@
                 <button onclick="closeRegistrationModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-2xl font-bold cursor-pointer">&times;</button>
 
                 <div class="mb-5">
-                    <h3 class="text-xl font-cinzel font-bold text-white mb-1">Register For A Day Of Blessings</h3>
+                    <h3 class="text-xl font-cinzel font-bold text-white mb-1">Register For A Time Of Blessings</h3>
                     <p class="text-xs text-gray-400">Secure your pass and submit your prayer requests to our global altar team.</p>
                 </div>
 
