@@ -35,6 +35,14 @@ Route::get('/livestreams', [LivestreamController::class, 'index'])->name('livest
 Route::get('/livestreams/{livestream}', [LivestreamController::class, 'show'])->name('stream.view');
 Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimony.submit');
 
+/**
+ * The Main Event Page (A Day Of Blessings layout) — now standalone/public
+ * Resides inside resources/views/public/home.blade.php
+ */
+Route::get('/home', function () {
+    return view('public.home');
+})->name('home');
+
 // ─── Guest Routes (Only Unauthenticated Visitors) ───────────────────────────
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -64,14 +72,6 @@ Route::middleware('auth')->group(function () {
 
 // ─── Fully Authenticated & Verified Application Wrapper ─────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
-
-    /**
-     * The Main Event Page (A Day Of Blessings layout)
-     * Resides inside resources/views/public/home.blade.php
-     */
-    Route::get('/home', function () {
-        return view('public.home');
-    })->name('home');
 
     /**
      * The Public Platform Dashboard (General update layout)
