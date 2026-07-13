@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'OFCC — Online Outreach Platform')
+@section('title', 'OFCC — Healing Streams Prayer Outreach')
 
 {{-- Force override to ensure no navbar elements from layouts.app render visible --}}
 <style>
@@ -13,90 +13,124 @@
     $liveLivestream = $liveLivestream ?? null;
 @endphp
 
-{{-- Hero Section --}}
-<section class="relative min-h-screen flex items-center overflow-hidden"
-         style="background: linear-gradient(180deg, rgba(5,13,26,0.9) 0%, rgba(10,22,40,0.9) 60%, rgba(13,30,58,0.95) 100%),
-                url('https://picsum.photos/id/1015/2000/1200') center/cover no-repeat;">
+{{-- Hero Section — Video Background with Glassmorphic Overlay --}}
+<section class="relative min-h-screen flex items-center overflow-hidden bg-slate-950">
 
-    <div class="absolute inset-0 bg-gradient-to-br from-blue-950/80 via-slate-900/85 to-slate-950/90"></div>
+    {{-- Video Background --}}
+    <video id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline="true"
+           disablePictureInPicture disableRemotePlayback preload="auto"
+           class="absolute inset-0 w-full h-full object-cover"
+           style="transform: translate3d(0,0,0); -webkit-transform: translate3d(0,0,0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform;">
+      <source src="https://s3.eu-west-2.amazonaws.com/lodams-videoshare/videos/ofcc_601699fe3ccc7b0007cbc451.mp4" type="video/mp4">
+    </video>
+
+    {{-- Dark gradient scrim so overlay text stays legible over any footage --}}
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/70 to-slate-950/95"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60"></div>
 
     <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="max-w-2xl">
 
-            {{-- Left Content Column --}}
-            <div class="lg:col-span-7 max-w-2xl">
-                {{-- Live / Upcoming Badge --}}
-                @if($liveLivestream)
-                    <a href="{{ route('stream.view', $liveLivestream->id) }}"
-                       class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/30 hover:bg-red-500/15 transition-colors">
-                        <span class="live-badge">● LIVE</span>
-                        <span class="text-sm text-red-200 font-medium">{{ $liveLivestream->title }}</span>
-                        <span class="text-red-400 text-xs font-medium">→ Watch Now</span>
-                    </a>
-                @else
-                    <div class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-gold/10 border border-gold/30">
-                        <span class="text-gold text-sm">📅 Event Date:</span>
-                        <span class="text-sm text-gray-200">Saturday, 18th July 2026 · 5:00 PM GMT+1</span>
-                    </div>
-                @endif
-
-                <h1 class="font-cinzel font-bold text-white leading-[1.1] tracking-tight mb-4"
-                    style="font-size: clamp(2.25rem, 7vw, 4.25rem);">
-                    A Time Of<br>
-                    <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Blessings</span>
-                </h1>
-
-                <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 max-w-lg">
-                    Welcome to our community. Join us for a special experience of The Word, Worship, Miracles, and Testimonies transforming lives globally.
-                </p>
-
-                {{-- Live Countdown Timer Frame --}}
-                <div id="countdown-container" class="grid grid-cols-4 gap-3 max-w-sm mb-8 text-center">
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-                        <span id="days" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Days</span>
-                    </div>
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-                        <span id="hours" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Hrs</span>
-                    </div>
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-                        <span id="minutes" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Mins</span>
-                    </div>
-                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-                        <span id="seconds" class="block text-2xl md:text-3xl font-bold text-red-400">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Secs</span>
-                    </div>
+            {{-- Live / Upcoming Badge --}}
+            @if($liveLivestream)
+                <a href="{{ route('stream.view', $liveLivestream->id) }}"
+                   class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/30 backdrop-blur-md hover:bg-red-500/15 transition-colors">
+                    <span class="live-badge">● LIVE</span>
+                    <span class="text-sm text-red-200 font-medium">{{ $liveLivestream->title }}</span>
+                    <span class="text-red-400 text-xs font-medium">→ Watch Now</span>
+                </a>
+            @else
+                <div class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/5 border border-gold/30 backdrop-blur-md">
+                    <span class="text-gold text-sm">📅 Event Date:</span>
+                    <span class="text-sm text-gray-200">Saturday, 18th July 2026 · 5:00 PM GMT+1</span>
                 </div>
+            @endif
 
-                {{-- Kept Registration Trigger Button --}}
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button type="button" onclick="openRegistrationModal()"
-                       class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                        🎟️ Register for A Time Of Blessings
-                    </button>
+           <h1 class="font-cinzel font-bold text-white leading-[1.1] tracking-tight mb-4 normal-case"
+    style="font-size: clamp(2.25rem, 7vw, 4.25rem); text-transform: none;">
+    Pre Healing Streams<br>
+    <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">prayer outreach</span>
+</h1>
+
+            <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 max-w-lg">
+                Join us for a divine encounter of healing, deliverance and restoration. Bring your faith,
+                bring your expectation — testimonies of healing are happening right now, all across the world.
+            </p>
+
+            {{-- Live Countdown Timer Frame — glass panel --}}
+            <div id="countdown-container" class="grid grid-cols-4 gap-3 max-w-sm mb-8 text-center">
+                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                    <span id="days" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
+                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Days</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                    <span id="hours" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
+                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Hrs</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                    <span id="minutes" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
+                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Mins</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                    <span id="seconds" class="block text-2xl md:text-3xl font-bold text-red-400">00</span>
+                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Secs</span>
                 </div>
             </div>
 
-            {{-- Right Graphic/Image Column (Maintained Exactly on the Right) --}}
-            <div class="lg:col-span-5 w-full flex items-center justify-center">
-                <div class="relative w-full max-w-md lg:max-w-none group">
-                    <div class="absolute -inset-1.5 bg-gradient-to-r from-gold to-yellow-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+            {{-- Registration Trigger Button --}}
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button type="button" onclick="openRegistrationModal()"
+                   class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
+                    🙏 Register for Healing Streams Prayer Outreach
+                </button>
+            </div>
+        </div>
+    </div>
 
-                    <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-gold/25 w-full bg-slate-950 p-1">
-                        <img src="/images/adob.jpeg"
-                             alt="A Day of Blessings Event Media Showcase"
-                             class="w-full h-auto max-h-[500px] object-contain rounded-xl transform group-hover:scale-[1.01] transition-transform duration-500 ease-out brightness-95">
+    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a1628] to-transparent z-10"></div>
+</section>
+
+{{-- Live Now — mirrors the Live Streams page block so viewers can watch without leaving the home page --}}
+@if($liveLivestream)
+<div class="bg-slate-950 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="font-cinzel font-bold text-white text-xl sm:text-2xl mb-6 text-center">
+            Participate <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Live</span> Here
+        </h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+
+            {{-- Event Flyer — matches hero glassmorphic navy/gold theme --}}
+            <div class="rounded-2xl overflow-hidden border border-gold/30 bg-[#0e192e] backdrop-blur-md shadow-lg shadow-gold/10 flex flex-col">
+                <img src="{{ asset('images/pray.jpeg') }}"
+                     alt="Healing Streams Prayer Outreach Flyer"
+                     class="w-full h-full object-cover min-h-[280px]">
+            </div>
+
+            {{-- Live Stream Box --}}
+            <div class="rounded-2xl overflow-hidden flex flex-col" style="border:2px solid rgba(239,68,68,0.5); box-shadow:0 0 40px rgba(239,68,68,0.1);">
+                <div style="background:rgba(239,68,68,0.1); padding:14px 20px; display:flex; align-items:center; justify-content:space-between;">
+                    <div class="flex items-center gap-3">
+                        <span class="live-badge">● LIVE NOW</span>
+                        <span class="text-white font-semibold">{{ $liveLivestream->title }}</span>
                     </div>
+                   <a href="{{ route('stream.view', $liveLivestream) }}" class="btn-gold text-sm">Watch Live →</a>
+                </div>
+                <div style="aspect-ratio:16/9; background:#000;" class="flex-1">
+                    @if($liveLivestream->embed_url)
+                        <iframe src="{{ $liveLivestream->embed_url }}" style="width:100%; height:100%;" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                    @else
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <p style="color:#4a5568;">Stream starting soon...</p>
+                        </div>
+                    @endif
                 </div>
             </div>
 
         </div>
     </div>
-
-    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a1628] to-transparent"></div>
-</section>
+</div>
+@endif
 
 
 {{-- INTERACTIVE POPUP MODAL CONTAINING THE UPDATED FORM --}}
@@ -112,8 +146,8 @@
                 <button onclick="closeRegistrationModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-2xl font-bold cursor-pointer">&times;</button>
 
                 <div class="mb-5">
-                    <h3 class="text-xl font-cinzel font-bold text-white mb-1">Register For A Time Of Blessings</h3>
-                    <p class="text-xs text-gray-400">Secure your pass and submit your prayer requests to our global altar team.</p>
+                    <h3 class="text-xl font-cinzel font-bold text-white mb-1">Register For Healing Streams Prayer Outreach</h3>
+                    <p class="text-xs text-gray-400">Reserve your seat and send your healing or prayer request to our global altar team.</p>
                 </div>
 
                 @if(session('success'))
@@ -183,14 +217,14 @@
 
                     {{-- Prayer Request Textarea Input Box Component --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Do you have a prayer request?</label>
-                        <textarea name="prayer_request" rows="3" placeholder="Write down your prayer details or special expectations here..."
+                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">What do you need healing or prayer for?</label>
+                        <textarea name="prayer_request" rows="3" placeholder="Share your healing need or prayer request here..."
                                   class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors resize-none"></textarea>
                     </div>
 
                     <div class="pt-2">
                         <button type="submit" class="w-full btn-gold py-3.5 text-sm font-semibold inline-flex justify-center items-center gap-2 cursor-pointer shadow-lg shadow-gold/10">
-                            Confirm Attendance & Submit Request
+                            Confirm My Seat & Submit Prayer Request
                         </button>
                     </div>
                 </form>
@@ -203,6 +237,49 @@
 <script>
     // Countdown Target: Saturday, July 18, 2026 17:00:00 GMT+0100
     const targetTime = new Date("July 18, 2026 17:00:00+01:00").getTime();
+
+    // Background video: some browsers (notably Safari/iOS and Chrome with strict
+    // autoplay policies) ignore the `autoplay` attribute unless the video is also
+    // muted via JS at play-time, not just via the HTML attribute. This forces it.
+    const heroVideo = document.getElementById('heroBgVideo');
+    if (heroVideo) {
+        heroVideo.muted = true;
+        heroVideo.defaultMuted = true;
+
+        // Only ever attempt play() once per readiness event — calling play()
+        // more than once while the video is already playing is what was
+        // causing the visible "crack"/stutter partway through playback.
+        let playAttempted = false;
+        const tryPlay = () => {
+            if (playAttempted || !heroVideo.paused) return;
+            playAttempted = true;
+            const playPromise = heroVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    playAttempted = false;
+                    // Autoplay blocked — retry once on first user interaction.
+                    const resumeOnInteraction = () => {
+                        heroVideo.play().catch(() => {});
+                        document.removeEventListener('click', resumeOnInteraction);
+                        document.removeEventListener('touchstart', resumeOnInteraction);
+                    };
+                    document.addEventListener('click', resumeOnInteraction, { once: true });
+                    document.addEventListener('touchstart', resumeOnInteraction, { once: true });
+                });
+            }
+        };
+
+        if (heroVideo.readyState >= 2) {
+            tryPlay();
+        } else {
+            heroVideo.addEventListener('loadeddata', tryPlay, { once: true });
+        }
+
+        // If the video file 404s or fails to decode, hide it so the poster/gradient shows instead.
+        heroVideo.addEventListener('error', () => {
+            heroVideo.style.display = 'none';
+        });
+    }
 
     function updateCountdownClock() {
         const now = new Date().getTime();

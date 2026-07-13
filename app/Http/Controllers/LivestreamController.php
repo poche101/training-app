@@ -2,9 +2,8 @@
 
 // app/Http/Controllers/LivestreamController.php
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Storage;
-
-
 use App\Models\Livestream;
 
 class LivestreamController extends Controller
@@ -12,12 +11,19 @@ class LivestreamController extends Controller
     public function index()
     {
         // ✅ Works on SQLite and MySQL
-$livestreams = Livestream::whereIn('status', ['live', 'scheduled'])
-    ->orderByRaw("CASE status WHEN 'live' THEN 0 WHEN 'scheduled' THEN 1 ELSE 2 END")
-    ->orderBy('scheduled_at')
-    ->get();
+        $live = Livestream::where('status', 'live')
+            ->orderBy('started_at', 'desc')
+            ->first();
 
-        return view('public.livestream.index', compact('livestreams'));
+        $upcoming = Livestream::where('status', 'scheduled')
+            ->orderBy('scheduled_at')
+            ->get();
+
+        $past = Livestream::where('status', 'ended')
+            ->orderBy('started_at', 'desc')
+            ->paginate(9);
+
+        return view('public.livestream.index', compact('live', 'upcoming', 'past'));
     }
 
     public function show(Livestream $livestream)

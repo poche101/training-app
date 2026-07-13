@@ -11,6 +11,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\LivestreamController;
 use App\Http\Controllers\TestimonyController;
 use App\Http\Controllers\EventRegistrationController;
+use App\Models\Livestream;
 
 // Auth Controllers
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -40,7 +41,9 @@ Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimo
  * Resides inside resources/views/public/home.blade.php
  */
 Route::get('/home', function () {
-    return view('public.home');
+    $liveLivestream = Livestream::where('status', 'live')->latest('started_at')->first();
+
+    return view('public.home', compact('liveLivestream'));
 })->name('home');
 
 // ─── Guest Routes (Only Unauthenticated Visitors) ───────────────────────────
