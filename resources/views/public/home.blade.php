@@ -13,125 +13,143 @@
     $liveLivestream = $liveLivestream ?? null;
 @endphp
 
-{{-- Hero Section — Video Background with Glassmorphic Overlay --}}
-<section class="relative min-h-screen flex items-center overflow-hidden bg-slate-950">
+{{-- Hero Section — 2-Column Split Layout (Text/Timer & Flyer) --}}
+<section class="relative min-h-screen flex items-center overflow-hidden bg-slate-950 py-16 md:py-24">
 
-    {{-- Video Background --}}
-    <video id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline="true"
-           disablePictureInPicture disableRemotePlayback preload="auto"
-           class="absolute inset-0 w-full h-full object-cover"
-           style="transform: translate3d(0,0,0); -webkit-transform: translate3d(0,0,0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform;">
-      <source src="https://s3.eu-west-2.amazonaws.com/lodams-videoshare/videos/ofcc_601699fe3ccc7b0007cbc451.mp4" type="video/mp4">
-    </video>
+    {{-- Decorative Background Gradients --}}
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0e192e]/30 via-slate-950 to-[#0a1628]"></div>
 
-    {{-- Dark gradient scrim so overlay text stays legible over any footage --}}
-    <div class="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/70 to-slate-950/95"></div>
-    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60"></div>
+    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10 w-full">
-        <div class="max-w-2xl">
+            {{-- Column 1: Info & Countdown --}}
+            <div>
+                {{-- Live / Upcoming Badge --}}
+                @if($liveLivestream)
+                    <a href="{{ route('stream.view', $liveLivestream->id) }}"
+                       class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/30 backdrop-blur-md hover:bg-red-500/15 transition-colors">
+                        <span class="live-badge">● LIVE</span>
+                        <span class="text-sm text-red-200 font-medium">{{ $liveLivestream->title }}</span>
+                        <span class="text-red-400 text-xs font-medium">→ Watch Now</span>
+                    </a>
+                @else
+                    <div class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/5 border border-gold/30 backdrop-blur-md">
+                        <span class="text-gold text-sm">📅 Event Date:</span>
+                        <span class="text-sm text-gray-200">Saturday, 18th July 2026 · 5:00 PM GMT+1</span>
+                    </div>
+                @endif
 
-            {{-- Live / Upcoming Badge --}}
-            @if($liveLivestream)
-                <a href="{{ route('stream.view', $liveLivestream->id) }}"
-                   class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/30 backdrop-blur-md hover:bg-red-500/15 transition-colors">
-                    <span class="live-badge">● LIVE</span>
-                    <span class="text-sm text-red-200 font-medium">{{ $liveLivestream->title }}</span>
-                    <span class="text-red-400 text-xs font-medium">→ Watch Now</span>
-                </a>
-            @else
-                <div class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/5 border border-gold/30 backdrop-blur-md">
-                    <span class="text-gold text-sm">📅 Event Date:</span>
-                    <span class="text-sm text-gray-200">Saturday, 18th July 2026 · 5:00 PM GMT+1</span>
+                <h1 class="font-cinzel font-bold text-white leading-[1.1] tracking-tight mb-4 normal-case"
+                    style="font-size: clamp(2.25rem, 6vw, 4rem); text-transform: none;">
+                    Pre Healing Streams<br>
+                    <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">prayer outreach</span>
+                </h1>
+
+                <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 max-w-lg">
+                    Join us for a divine encounter of healing, deliverance and restoration. Bring your faith,
+                    bring your expectation — testimonies of healing are happening right now, all across the world.
+                </p>
+
+                {{-- Live Countdown Timer Frame — glass panel --}}
+                <div id="countdown-container" class="grid grid-cols-4 gap-3 max-w-sm mb-8 text-center">
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                        <span id="days" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Days</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                        <span id="hours" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Hrs</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                        <span id="minutes" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Mins</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+                        <span id="seconds" class="block text-2xl md:text-3xl font-bold text-red-400">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Secs</span>
+                    </div>
                 </div>
-            @endif
 
-           <h1 class="font-cinzel font-bold text-white leading-[1.1] tracking-tight mb-4 normal-case"
-    style="font-size: clamp(2.25rem, 7vw, 4.25rem); text-transform: none;">
-    Pre Healing Streams<br>
-    <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">prayer outreach</span>
-</h1>
-
-            <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 max-w-lg">
-                Join us for a divine encounter of healing, deliverance and restoration. Bring your faith,
-                bring your expectation — testimonies of healing are happening right now, all across the world.
-            </p>
-
-            {{-- Live Countdown Timer Frame — glass panel --}}
-            <div id="countdown-container" class="grid grid-cols-4 gap-3 max-w-sm mb-8 text-center">
-                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                    <span id="days" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Days</span>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                    <span id="hours" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Hrs</span>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                    <span id="minutes" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Mins</span>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                    <span id="seconds" class="block text-2xl md:text-3xl font-bold text-red-400">00</span>
-                    <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Secs</span>
+                {{-- Registration Trigger Button --}}
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="button" onclick="openRegistrationModal()"
+                       class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
+                        🙏 Register for Pre Healing Streams Prayer Outreach
+                    </button>
                 </div>
             </div>
 
-            {{-- Registration Trigger Button --}}
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button type="button" onclick="openRegistrationModal()"
-                   class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                    🙏 Register for Healing Streams Prayer Outreach
-                </button>
-            </div>
+            {{-- Column 2: Flyer Presentation --}}
+           <div class="flex justify-center lg:justify-end w-full">
+    {{-- Increased max-w-md to max-w-xl (or change to max-w-2xl for even larger) --}}
+    <div class="rounded-2xl overflow-hidden border border-gold/30 bg-[#0e192e] backdrop-blur-md shadow-2xl shadow-gold/10 w-full max-w-lg lg:max-w-xl transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
+        <img src="{{ asset('images/pray.jpeg') }}"
+             alt="Healing Streams Prayer Outreach Flyer"
+             {{-- Bumped min-h to ensure it fills the larger card nicely --}}
+             class="w-full h-auto object-cover min-h-[500px] md:min-h-[550px]">
+    </div>
+</div>
+
         </div>
     </div>
 
     <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a1628] to-transparent z-10"></div>
 </section>
 
-{{-- Live Now — mirrors the Live Streams page block so viewers can watch without leaving the home page --}}
-@if($liveLivestream)
-<div class="bg-slate-950 py-12">
+{{-- Media / Stream Display Area Component --}}
+<div class="bg-slate-950 py-12 border-t border-slate-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="font-cinzel font-bold text-white text-xl sm:text-2xl mb-6 text-center">
-            Participate <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Live</span> Here
+            @if($liveLivestream)
+                Participate <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Live</span> Here
+            @else
+                Watch Outreach <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Highlights</span>
+            @endif
         </h2>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <div class="max-w-3xl mx-auto">
+            {{-- Video Content Player Box Frame Container --}}
+            <div class="rounded-2xl overflow-hidden flex flex-col" style="border:2px solid {{ $liveLivestream ? 'rgba(239,68,68,0.5)' : 'rgba(212,175,55,0.4)' }}; box-shadow: 0 0 40px rgba(14,25,46,0.5);">
 
-            {{-- Event Flyer — matches hero glassmorphic navy/gold theme --}}
-            <div class="rounded-2xl overflow-hidden border border-gold/30 bg-[#0e192e] backdrop-blur-md shadow-lg shadow-gold/10 flex flex-col">
-                <img src="{{ asset('images/pray.jpeg') }}"
-                     alt="Healing Streams Prayer Outreach Flyer"
-                     class="w-full h-full object-cover min-h-[280px]">
-            </div>
-
-            {{-- Live Stream Box --}}
-            <div class="rounded-2xl overflow-hidden flex flex-col" style="border:2px solid rgba(239,68,68,0.5); box-shadow:0 0 40px rgba(239,68,68,0.1);">
-                <div style="background:rgba(239,68,68,0.1); padding:14px 20px; display:flex; align-items:center; justify-content:space-between;">
+                {{-- Player Top Control Bar --}}
+                <div style="background: rgba(14,25,46,0.8); padding:14px 20px; display:flex; align-items:center; justify-content:space-between;" class="backdrop-blur-md">
                     <div class="flex items-center gap-3">
-                        <span class="live-badge">● LIVE NOW</span>
-                        <span class="text-white font-semibold">{{ $liveLivestream->title }}</span>
+                        @if($liveLivestream)
+                            <span class="live-badge">● LIVE NOW</span>
+                            <span class="text-white font-semibold text-sm sm:text-base">{{ $liveLivestream->title }}</span>
+                        @else
+                            <span class="px-2.5 py-1 text-[11px] font-bold tracking-wider text-gold bg-gold/10 border border-gold/20 rounded-md uppercase">Intro Video</span>
+                            <span class="text-gray-200 font-semibold text-sm sm:text-base">Prayer Outreach Stream Presentation</span>
+                        @endif
                     </div>
-                   <a href="{{ route('stream.view', $liveLivestream) }}" class="btn-gold text-sm">Watch Live →</a>
+                    @if($liveLivestream)
+                        <a href="{{ route('stream.view', $liveLivestream) }}" class="btn-gold text-sm">Watch Live →</a>
+                    @endif
                 </div>
-                <div style="aspect-ratio:16/9; background:#000;" class="flex-1">
-                    @if($liveLivestream->embed_url)
-                        <iframe src="{{ $liveLivestream->embed_url }}" style="width:100%; height:100%;" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+
+                {{-- Player Screen Output Canvas Frame --}}
+                <div style="aspect-ratio:16/9; background:#000;" class="flex-1 w-full relative">
+                    @if($liveLivestream)
+                        @if($liveLivestream->embed_url)
+                            <iframe src="{{ $liveLivestream->embed_url }}" style="width:100%; height:100%;" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                        @else
+                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                                <p style="color:#4a5568;">Stream starting soon...</p>
+                            </div>
+                        @endif
                     @else
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                            <p style="color:#4a5568;">Stream starting soon...</p>
-                        </div>
+                        {{-- Shifted Background Video here to serve as the default showcase asset component --}}
+                        <video id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline="true"
+                               controls disablePictureInPicture disableRemotePlayback preload="auto"
+                               class="w-full h-full object-cover">
+                            <source src="https://s3.eu-west-2.amazonaws.com/lodams-videoshare/videos/ofcc_601699fe3ccc7b0007cbc451.mp4" type="video/mp4">
+                        </video>
                     @endif
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-@endif
-
 
 {{-- INTERACTIVE POPUP MODAL CONTAINING THE UPDATED FORM --}}
 <div id="regModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -146,7 +164,7 @@
                 <button onclick="closeRegistrationModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-2xl font-bold cursor-pointer">&times;</button>
 
                 <div class="mb-5">
-                    <h3 class="text-xl font-cinzel font-bold text-white mb-1">Register For Healing Streams Prayer Outreach</h3>
+                    <h3 class="text-xl font-cinzel font-bold text-white mb-1">Register For Pre Healing Streams Prayer Outreach</h3>
                     <p class="text-xs text-gray-400">Reserve your seat and send your healing or prayer request to our global altar team.</p>
                 </div>
 
@@ -217,8 +235,8 @@
 
                     {{-- Prayer Request Textarea Input Box Component --}}
                     <div>
-                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">What do you need healing or prayer for?</label>
-                        <textarea name="prayer_request" rows="3" placeholder="Share your healing need or prayer request here..."
+                        <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Send us your prayer request.</label>
+                        <textarea name="prayer_request" rows="3" placeholder="Send your prayer request here..."
                                   class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors resize-none"></textarea>
                     </div>
 
@@ -238,17 +256,12 @@
     // Countdown Target: Saturday, July 18, 2026 17:00:00 GMT+0100
     const targetTime = new Date("July 18, 2026 17:00:00+01:00").getTime();
 
-    // Background video: some browsers (notably Safari/iOS and Chrome with strict
-    // autoplay policies) ignore the `autoplay` attribute unless the video is also
-    // muted via JS at play-time, not just via the HTML attribute. This forces it.
+    // Video Engine Controller Framework setup
     const heroVideo = document.getElementById('heroBgVideo');
     if (heroVideo) {
         heroVideo.muted = true;
         heroVideo.defaultMuted = true;
 
-        // Only ever attempt play() once per readiness event — calling play()
-        // more than once while the video is already playing is what was
-        // causing the visible "crack"/stutter partway through playback.
         let playAttempted = false;
         const tryPlay = () => {
             if (playAttempted || !heroVideo.paused) return;
@@ -257,7 +270,6 @@
             if (playPromise !== undefined) {
                 playPromise.catch(() => {
                     playAttempted = false;
-                    // Autoplay blocked — retry once on first user interaction.
                     const resumeOnInteraction = () => {
                         heroVideo.play().catch(() => {});
                         document.removeEventListener('click', resumeOnInteraction);
@@ -275,7 +287,6 @@
             heroVideo.addEventListener('loadeddata', tryPlay, { once: true });
         }
 
-        // If the video file 404s or fails to decode, hide it so the poster/gradient shows instead.
         heroVideo.addEventListener('error', () => {
             heroVideo.style.display = 'none';
         });
