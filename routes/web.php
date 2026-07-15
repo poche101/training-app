@@ -36,6 +36,10 @@ Route::get('/livestreams', [LivestreamController::class, 'index'])->name('livest
 Route::get('/livestreams/{livestream}', [LivestreamController::class, 'show'])->name('stream.view');
 Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimony.submit');
 
+// Public event registration (Healing Streams Prayer Outreach form) — must stay
+// outside the auth/verified group so guests can register without logging in.
+Route::post('/member/event-register', [EventRegistrationController::class, 'store'])->name('member.event.register');
+
 /**
  * The Main Event Page (A Day Of Blessings layout) — now standalone/public
  * Resides inside resources/views/public/home.blade.php
@@ -86,7 +90,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ─── Member Sub-Routes ───────────────────────────────────────────────────
     Route::prefix('member')->name('member.')->group(function () {
-        Route::post('/event-register', [EventRegistrationController::class, 'store'])->name('event.register');
         Route::get('/dashboard', [MemberController::class, 'dashboard'])->name('dashboard');
         Route::get('/resources', [MemberController::class, 'resources'])->name('resources');
         Route::get('/resources/{resource}/download', [MemberController::class, 'downloadResource'])->name('resources.download');

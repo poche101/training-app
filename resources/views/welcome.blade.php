@@ -53,6 +53,20 @@
                    class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2">
                     📺 {{ $liveLivestream ? 'Watch Live Now' : 'Watch Live Stream' }}
                 </a>
+
+                @auth
+                    <a href="{{ route('member.dashboard') }}"
+                       class="text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 rounded-lg font-semibold text-white transition-all hover:-translate-y-0.5"
+                       style="background: rgba(201,162,39,0.08); border: 1px solid rgba(201,162,39,0.35);">
+                        ⊞ Go to Dashboard
+                    </a>
+                @else
+                    <a href="{{ route('login') }}"
+                       class="text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 rounded-lg font-semibold text-white transition-all hover:-translate-y-0.5"
+                       style="background: rgba(201,162,39,0.08); border: 1px solid rgba(201,162,39,0.35);">
+                        ⊞ Member Dashboard
+                    </a>
+                @endauth
             </div>
         </div>
     </div>
@@ -60,6 +74,53 @@
     <!-- Optional subtle bottom fade -->
     <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a1628] to-transparent"></div>
 </section>
+
+{{-- Member Quick Access --}}
+@auth
+<section class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-14 lg:py-16">
+    <div class="mb-8">
+        <p class="text-gold text-sm font-semibold uppercase tracking-widest mb-1">Your Account</p>
+        <h2 class="font-cinzel text-2xl md:text-3xl font-bold text-white">Quick Access</h2>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <a href="{{ route('member.dashboard') }}"
+           class="group rounded-2xl p-5 flex flex-col items-center text-center gap-3 transition-all hover:-translate-y-1 hover:border-gold"
+           style="background:rgba(14,25,46,0.85); border:1px solid rgba(201,162,39,0.12);">
+            <span class="text-2xl">⊞</span>
+            <span class="text-sm font-medium text-white group-hover:text-gold">Dashboard</span>
+        </a>
+
+        <a href="{{ route('member.resources') }}"
+           class="group rounded-2xl p-5 flex flex-col items-center text-center gap-3 transition-all hover:-translate-y-1 hover:border-gold"
+           style="background:rgba(14,25,46,0.85); border:1px solid rgba(201,162,39,0.12);">
+            <span class="text-2xl">📚</span>
+            <span class="text-sm font-medium text-white group-hover:text-gold">Resources</span>
+        </a>
+
+        <a href="{{ route('member.announcements') }}"
+           class="group rounded-2xl p-5 flex flex-col items-center text-center gap-3 transition-all hover:-translate-y-1 hover:border-gold"
+           style="background:rgba(14,25,46,0.85); border:1px solid rgba(201,162,39,0.12);">
+            <span class="text-2xl">📢</span>
+            <span class="text-sm font-medium text-white group-hover:text-gold">Announcements</span>
+        </a>
+
+        <a href="{{ route('member.offerings') }}"
+           class="group rounded-2xl p-5 flex flex-col items-center text-center gap-3 transition-all hover:-translate-y-1 hover:border-gold"
+           style="background:rgba(14,25,46,0.85); border:1px solid rgba(201,162,39,0.12);">
+            <span class="text-2xl">💰</span>
+            <span class="text-sm font-medium text-white group-hover:text-gold">Offerings</span>
+        </a>
+
+        <a href="{{ route('member.profile') }}"
+           class="group rounded-2xl p-5 flex flex-col items-center text-center gap-3 transition-all hover:-translate-y-1 hover:border-gold"
+           style="background:rgba(14,25,46,0.85); border:1px solid rgba(201,162,39,0.12);">
+            <span class="text-2xl">👤</span>
+            <span class="text-sm font-medium text-white group-hover:text-gold">Profile</span>
+        </a>
+    </div>
+</section>
+@endauth
 
 {{-- Upcoming Events --}}
 @if($upcomingEvents->count())
@@ -111,6 +172,9 @@
                 <p class="text-gold text-sm font-semibold uppercase tracking-widest mb-1">Updates</p>
                 <h2 class="font-cinzel text-3xl md:text-4xl font-bold text-white">Announcements</h2>
             </div>
+            @auth
+                <a href="{{ route('member.announcements') }}" class="btn-outline text-sm whitespace-nowrap">View All →</a>
+            @endauth
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -173,5 +237,3 @@
 </section>
 
 @endsection
-
-
