@@ -180,9 +180,25 @@
                             <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-4">
                                 Share the registration link with your friends
                             </p>
+
+                            {{-- Copyable Link Box --}}
+                            <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 mb-4 max-w-sm mx-auto">
+                                <span id="regShareLinkText" class="flex-1 text-sm text-gold font-medium truncate text-left">
+                                    https://ethsch.org/4jH
+                                </span>
+                                <button type="button" onclick="copyRegistrationLink(this)"
+                                        class="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-800 hover:bg-gold/20 border border-slate-700 hover:border-gold/40 flex items-center justify-center text-white transition-colors"
+                                        title="Copy link">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
                             <div class="flex items-center justify-center gap-3">
                                 {{-- X (Twitter) — supports pre-filled share intent --}}
-                                <a href="https://twitter.com/intent/tweet?text={{ urlencode('Join me for the Pre Healing Streams Prayer Outreach 🙏') }}&url={{ urlencode(url()->current()) }}"
+                                <a href="https://twitter.com/intent/tweet?text={{ urlencode('Join me for the Pre Healing Streams Prayer Outreach 🙏') }}&url={{ urlencode('https://ethsch.org/4jH') }}"
                                    target="_blank" rel="noopener"
                                    class="w-11 h-11 rounded-full bg-slate-800 hover:bg-gold/20 border border-slate-700 hover:border-gold/40 flex items-center justify-center text-white transition-colors"
                                    title="Share on X">
@@ -192,7 +208,7 @@
                                 </a>
 
                                 {{-- Facebook — supports pre-filled share intent --}}
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode('https://ethsch.org/4jH') }}"
                                    target="_blank" rel="noopener"
                                    class="w-11 h-11 rounded-full bg-slate-800 hover:bg-gold/20 border border-slate-700 hover:border-gold/40 flex items-center justify-center text-white transition-colors"
                                    title="Share on Facebook">
@@ -308,7 +324,7 @@
 
                             <div class="pt-2">
                                 <button type="submit" class="w-full btn-gold py-3.5 text-sm font-semibold inline-flex justify-center items-center gap-2 cursor-pointer shadow-lg shadow-gold/10">
-                                    Submit
+                                    Confirm My Seat & Submit Prayer Request
                                 </button>
                             </div>
                         </form>
