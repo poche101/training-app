@@ -13,171 +13,100 @@
     $liveLivestream = $liveLivestream ?? null;
 @endphp
 
-{{-- Hero Section — 2-Column Split Layout (Text/Timer & Flyer) --}}
+{{-- Hero Section — now just the stream/video player plus the registration button --}}
 <section class="relative min-h-screen flex items-center overflow-hidden bg-slate-950 py-16 md:py-24">
 
     {{-- Decorative Background Gradients --}}
     <div class="absolute inset-0 bg-gradient-to-b from-[#0e192e]/30 via-slate-950 to-[#0a1628]"></div>
 
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
 
-            {{-- Column 1: Info & Countdown --}}
-            <div>
-                {{-- Live / Upcoming Badge --}}
-                @if($liveLivestream)
-                    <a href="{{ route('stream.view', $liveLivestream->id) }}"
-                       class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/30 backdrop-blur-md hover:bg-red-500/15 transition-colors">
-                        <span class="live-badge">● LIVE</span>
-                        <span class="text-sm text-red-200 font-medium">{{ $liveLivestream->title }}</span>
-                        <span class="text-red-400 text-xs font-medium">→ Watch Now</span>
-                    </a>
-                @else
-                    <div class="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/5 border border-gold/30 backdrop-blur-md">
-                        <span class="text-gold text-sm">📅 Event Date:</span>
-                        <span class="text-sm text-gray-200">Saturday, 18th July 2026 · 5:00 PM GMT+1</span>
-                    </div>
-                @endif
+        <h2 class="font-cinzel font-bold text-white text-xl sm:text-2xl mb-6 text-center">
+            @if($liveLivestream)
+                Pre Healing Streams<span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Prayer Outreach</span> Re-broadcast
+            @else
+                Watch Outreach <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Rebroadcast</span>
+            @endif
+        </h2>
 
-                <h1 class="font-cinzel font-bold text-white leading-[1.1] tracking-tight mb-4 normal-case"
-                    style="font-size: clamp(2.25rem, 6vw, 4rem); text-transform: none;">
-                    Pre Healing Streams<br>
-                    <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">prayer outreach</span>
-                </h1>
+        {{-- Video Content Player Box Frame Container --}}
+        <div class="rounded-2xl overflow-hidden flex flex-col" style="border:2px solid {{ $liveLivestream ? 'rgba(239,68,68,0.5)' : 'rgba(212,175,55,0.4)' }}; box-shadow: 0 0 40px rgba(14,25,46,0.5);">
 
-                <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 max-w-lg">
-                    Join us for a divine encounter of healing, deliverance and restoration. Bring your faith,
-                    bring your expectation — testimonies of healing are happening right now, all across the world.
-                </p>
-
-                {{-- Live Countdown Timer Frame — glass panel --}}
-                <div id="countdown-container" class="grid grid-cols-4 gap-3 max-w-sm mb-8 text-center">
-                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                        <span id="days" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Days</span>
-                    </div>
-                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                        <span id="hours" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Hrs</span>
-                    </div>
-                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                        <span id="minutes" class="block text-2xl md:text-3xl font-bold text-gold">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Mins</span>
-                    </div>
-                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-                        <span id="seconds" class="block text-2xl md:text-3xl font-bold text-red-400">00</span>
-                        <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Secs</span>
-                    </div>
+            {{-- Player Top Control Bar --}}
+            <div style="background: rgba(14,25,46,0.8); padding:14px 20px; display:flex; align-items:center; justify-content:space-between;" class="backdrop-blur-md">
+                <div class="flex items-center gap-3">
+                    @if($liveLivestream)
+                        <span class="live-badge">● LIVE NOW</span>
+                        <span class="text-white font-semibold text-sm sm:text-base">{{ $liveLivestream->title }}</span>
+                        <span id="viewerCount" class="inline-flex items-center gap-1 text-xs text-gray-300 bg-white/5 border border-white/10 rounded-full px-2.5 py-1 whitespace-nowrap">
+                            👀 <span id="viewerCountNumber">–</span> watching
+                        </span>
+                    @else
+                        <span class="px-2.5 py-1 text-[11px] font-bold tracking-wider text-gold bg-gold/10 border border-gold/20 rounded-md uppercase">Intro Video</span>
+                        <span class="text-gray-200 font-semibold text-sm sm:text-base">Prayer Outreach Stream Presentation</span>
+                    @endif
                 </div>
 
-                {{-- Registration Trigger Button --}}
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button type="button" onclick="openRegistrationModal()"
-                       class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                        🙏 Register for Pre Healing Streams Prayer Outreach
-                    </button>
-                </div>
             </div>
 
-            {{-- Column 2: Flyer Presentation --}}
-           <div class="flex justify-center lg:justify-end w-full">
-    {{-- Increased max-w-md to max-w-xl (or change to max-w-2xl for even larger) --}}
-    <div class="rounded-2xl overflow-hidden border border-gold/30 bg-[#0e192e] backdrop-blur-md shadow-2xl shadow-gold/10 w-full max-w-lg lg:max-w-xl transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
-        <img src="{{ asset('images/pray.jpeg') }}"
-             alt="Healing Streams Prayer Outreach Flyer"
-             {{-- Bumped min-h to ensure it fills the larger card nicely --}}
-             class="w-full h-auto object-cover min-h-[500px] md:min-h-[550px]">
-    </div>
-</div>
-
+            {{-- Player Screen Output Canvas Frame --}}
+            <div style="aspect-ratio:16/9; background:#000;" class="flex-1 w-full relative">
+                @if($liveLivestream)
+                    @if($liveLivestream->embed_url)
+                        <iframe src="{{ $liveLivestream->embed_url }}" style="width:100%; height:100%;" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                    @else
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <p style="color:#4a5568;">Stream starting soon...</p>
+                        </div>
+                    @endif
+                @else
+                    {{-- Shifted Background Video here to serve as the default showcase asset component --}}
+                    <video id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline="true"
+                           controls disablePictureInPicture disableRemotePlayback preload="auto"
+                           class="w-full h-full object-cover">
+                        <source src="https://s3.eu-west-2.amazonaws.com/lodams-videoshare/videos/ofcc_601699fe3ccc7b0007cbc451.mp4" type="video/mp4">
+                    </video>
+                @endif
+            </div>
         </div>
+
+        {{-- Live Comments & Prayer Team Responses Panel — only shown
+             while a stream is actually live, mirroring the "Participate
+             Live" section above it. --}}
+        @if($liveLivestream)
+        <div id="commentsPanel" class="mt-6 rounded-2xl border border-white/10 bg-[#0e192e]/60 backdrop-blur-md overflow-hidden">
+            <div style="padding:14px 20px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                <span class="text-white font-semibold text-sm">💬 Live Comments &amp;</span>
+            </div>
+
+            <div id="commentsList" class="p-4 sm:p-5 space-y-4 max-h-96 overflow-y-auto">
+                <p style="color:#6b7280; font-size:13px;">Loading comments...</p>
+            </div>
+
+            <form id="commentForm" class="p-4 sm:p-5 border-t border-white/10 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" id="commentName" placeholder="Your name" required maxlength="100"
+                           class="sm:col-span-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+                    <input type="text" id="commentBody" placeholder="Share a comment or prayer request..." required maxlength="1000"
+                           class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+                </div>
+                <button type="submit" class="btn-gold text-sm px-6 py-2.5">Post Comment</button>
+            </form>
+        </div>
+        @endif
+
+        {{-- Registration Trigger Button --}}
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+            <button type="button" onclick="openRegistrationModal()"
+               class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
+                🙏 Join Our outreach Fellowship Center
+            </button>
+        </div>
+
     </div>
 
     <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a1628] to-transparent z-10"></div>
 </section>
-
-{{-- Media / Stream Display Area Component --}}
-<div class="bg-slate-950 py-12 border-t border-slate-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="font-cinzel font-bold text-white text-xl sm:text-2xl mb-6 text-center">
-            @if($liveLivestream)
-                Participate <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Live</span> Here
-            @else
-                Watch Outreach <span class="bg-gradient-to-r from-gold to-yellow-300 bg-clip-text text-transparent">Highlights</span>
-            @endif
-        </h2>
-
-        <div class="max-w-3xl mx-auto">
-            {{-- Video Content Player Box Frame Container --}}
-            <div class="rounded-2xl overflow-hidden flex flex-col" style="border:2px solid {{ $liveLivestream ? 'rgba(239,68,68,0.5)' : 'rgba(212,175,55,0.4)' }}; box-shadow: 0 0 40px rgba(14,25,46,0.5);">
-
-                {{-- Player Top Control Bar --}}
-                <div style="background: rgba(14,25,46,0.8); padding:14px 20px; display:flex; align-items:center; justify-content:space-between;" class="backdrop-blur-md">
-                    <div class="flex items-center gap-3">
-                        @if($liveLivestream)
-                            <span class="live-badge">● LIVE NOW</span>
-                            <span class="text-white font-semibold text-sm sm:text-base">{{ $liveLivestream->title }}</span>
-                            <span id="viewerCount" class="inline-flex items-center gap-1 text-xs text-gray-300 bg-white/5 border border-white/10 rounded-full px-2.5 py-1 whitespace-nowrap">
-                                👀 <span id="viewerCountNumber">–</span> watching
-                            </span>
-                        @else
-                            <span class="px-2.5 py-1 text-[11px] font-bold tracking-wider text-gold bg-gold/10 border border-gold/20 rounded-md uppercase">Intro Video</span>
-                            <span class="text-gray-200 font-semibold text-sm sm:text-base">Prayer Outreach Stream Presentation</span>
-                        @endif
-                    </div>
-                    @if($liveLivestream)
-                        <a href="{{ route('stream.view', $liveLivestream) }}" class="btn-gold text-sm">Watch Live →</a>
-                    @endif
-                </div>
-
-                {{-- Player Screen Output Canvas Frame --}}
-                <div style="aspect-ratio:16/9; background:#000;" class="flex-1 w-full relative">
-                    @if($liveLivestream)
-                        @if($liveLivestream->embed_url)
-                            <iframe src="{{ $liveLivestream->embed_url }}" style="width:100%; height:100%;" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-                        @else
-                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                                <p style="color:#4a5568;">Stream starting soon...</p>
-                            </div>
-                        @endif
-                    @else
-                        {{-- Shifted Background Video here to serve as the default showcase asset component --}}
-                        <video id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline="true"
-                               controls disablePictureInPicture disableRemotePlayback preload="auto"
-                               class="w-full h-full object-cover">
-                            <source src="https://s3.eu-west-2.amazonaws.com/lodams-videoshare/videos/ofcc_601699fe3ccc7b0007cbc451.mp4" type="video/mp4">
-                        </video>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Live Comments & Prayer Team Responses Panel — only shown
-                 while a stream is actually live, mirroring the "Participate
-                 Live" section above it. --}}
-            @if($liveLivestream)
-            <div id="commentsPanel" class="mt-6 rounded-2xl border border-white/10 bg-[#0e192e]/60 backdrop-blur-md overflow-hidden">
-                <div style="padding:14px 20px; border-bottom:1px solid rgba(255,255,255,0.08);">
-                    <span class="text-white font-semibold text-sm">💬 Live Comments &amp; Prayer Team Responses</span>
-                </div>
-
-                <div id="commentsList" class="p-4 sm:p-5 space-y-4 max-h-96 overflow-y-auto">
-                    <p style="color:#6b7280; font-size:13px;">Loading comments...</p>
-                </div>
-
-                <form id="commentForm" class="p-4 sm:p-5 border-t border-white/10 space-y-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <input type="text" id="commentName" placeholder="Your name" required maxlength="100"
-                               class="sm:col-span-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
-                        <input type="text" id="commentBody" placeholder="Share a comment or prayer request..." required maxlength="1000"
-                               class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
-                    </div>
-                    <button type="submit" class="btn-gold text-sm px-6 py-2.5">Post Comment</button>
-                </form>
-            </div>
-            @endif
-        </div>
-    </div>
-</div>
 
 {{-- INTERACTIVE POPUP MODAL CONTAINING THE UPDATED FORM --}}
 <div id="regModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -363,11 +292,8 @@
     </div>
 </div>
 
-{{-- MODAL INTERACTION AND TIMER SCRIPT RUNNERS --}}
+{{-- MODAL INTERACTION AND VIDEO SCRIPT RUNNERS --}}
 <script>
-    // Countdown Target: Saturday, July 18, 2026 17:00:00 GMT+0100
-    const targetTime = new Date("July 18, 2026 17:00:00+01:00").getTime();
-
     // Video Engine Controller Framework setup
     const heroVideo = document.getElementById('heroBgVideo');
     if (heroVideo) {
@@ -403,32 +329,6 @@
             heroVideo.style.display = 'none';
         });
     }
-
-    function updateCountdownClock() {
-        const now = new Date().getTime();
-        const difference = targetTime - now;
-
-        if (difference <= 0) {
-            document.getElementById("countdown-container").innerHTML =
-                `<div class="col-span-4 bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-200 text-sm font-semibold tracking-wide animate-pulse uppercase">
-                    ✨ The Broadcast is Live Now! ✨
-                 </div>`;
-            return;
-        }
-
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        document.getElementById("days").innerText = String(days).padStart(2, '0');
-        document.getElementById("hours").innerText = String(hours).padStart(2, '0');
-        document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
-        document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
-    }
-
-    updateCountdownClock();
-    setInterval(updateCountdownClock, 1000);
 
     // Modal Visibility Mechanics
     function openRegistrationModal() {
