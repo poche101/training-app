@@ -3,29 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Livestream;
+use App\Models\StreamComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use App\Models\StreamComment;
-
 
 class LivestreamController extends Controller
 {
     public function index()
     {
-        $live = Livestream::where('status', 'live')
-            ->orderBy('started_at', 'desc')
-            ->first();
-
-        $upcoming = Livestream::where('status', 'scheduled')
-            ->orderBy('scheduled_at')
-            ->get();
-
-        $past = Livestream::where('status', 'ended')
-            ->orderBy('started_at', 'desc')
+        // Fetch all livestreams ordered by their start/scheduled time
+        $livestreams = Livestream::orderBy('started_at', 'desc')
+            ->orderBy('scheduled_at', 'desc')
             ->paginate(9);
 
-        return view('public.livestream.index', compact('live', 'upcoming', 'past'));
+        // Pass the exact variable name your Blade view is expecting
+        return view('public.livestream.index', compact('livestreams'));
     }
 
     public function show(Livestream $livestream)
@@ -40,21 +33,13 @@ class LivestreamController extends Controller
      */
     public function heartbeat(Request $request, Livestream $livestream)
     {
-        // Anonymous visitors get a random id stored in their session,
-        // so refreshing the page doesn't count as a new viewer.
         $viewerId = $request->session()->get('viewer_uuid')
             ?? tap(Str::uuid()->toString(), fn ($id) => $request->session()->put('viewer_uuid', $id));
 
         $key = "livestream:{$livestream->id}:viewer:{$viewerId}";
 
-        // TTL a bit longer than the polling interval, so a couple of
-        // missed pings (tab backgrounded, brief network blip) don't
-        // instantly drop the count.
         Cache::put($key, true, now()->addSeconds(20));
 
-        // Track this viewer's key in a per-stream registry so we can
-        // enumerate active viewers on file/database cache drivers,
-        // which don't support key-pattern scans the way Redis does.
         $registryKey = "livestream:{$livestream->id}:viewer_registry";
         $registry = Cache::get($registryKey, []);
         $registry[$viewerId] = $key;
@@ -72,35 +57,42 @@ class LivestreamController extends Controller
         ]);
     }
 
+    /**
+     * Returns all top-level comments (with their admin replies nested)
+     * for a stream, polled by the frontend.
+     */
+    public function comments(Livestream $livestream)
+    {
+        return response()->json([
+            'comments' => $livestream->topLevelComments()->get(),
+        ]);
+    }
+
+    /**
+     * Stores a guest comment on a stream. No auth required — viewers
+     * identify themselves by typing a name in the form.
+     */
+    public function storeComment(Request $request, Livestream $livestream)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'body' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $comment = $livestream->comments()->create($data);
+
+        return response()->json(['comment' => $comment], 201);
+    }
+
     private function countViewers(int $livestreamId): int
     {
         $registryKey = "livestream:{$livestreamId}:viewer_registry";
         $registry = Cache::get($registryKey, []);
 
-        // Prune anything whose heartbeat has expired.
         $active = array_filter($registry, fn ($key) => Cache::has($key));
 
         Cache::put($registryKey, $active, now()->addMinutes(2));
 
         return count($active);
     }
-
-    public function comments(Livestream $livestream)
-{
-    return response()->json([
-        'comments' => $livestream->topLevelComments()->get(),
-    ]);
-}
-
-public function storeComment(Request $request, Livestream $livestream)
-{
-    $data = $request->validate([
-        'name' => ['required', 'string', 'max:100'],
-        'body' => ['required', 'string', 'max:1000'],
-    ]);
-
-    $comment = $livestream->comments()->create($data);
-
-    return response()->json(['comment' => $comment], 201);
-}
 }
