@@ -34,6 +34,13 @@ Route::get('/', function () {
 // ─── Public Routes (No Auth Required) ───────────────────────────────────────
 Route::get('/livestreams', [LivestreamController::class, 'index'])->name('livestreams');
 Route::get('/livestreams/{livestream}', [LivestreamController::class, 'show'])->name('stream.view');
+Route::post('/livestreams/{livestream}/heartbeat', [LivestreamController::class, 'heartbeat'])->name('stream.heartbeat');
+
+// Live comments — guests can view and post comments on a stream; replies
+// are posted separately by admins from the admin panel (see below).
+Route::get('/livestreams/{livestream}/comments', [LivestreamController::class, 'comments'])->name('stream.comments');
+Route::post('/livestreams/{livestream}/comments', [LivestreamController::class, 'storeComment'])->name('stream.comments.store');
+
 Route::post('/testimony', [TestimonyController::class, 'submit'])->name('testimony.submit');
 
 // Public event registration (Healing Streams Prayer Outreach form) — must stay
@@ -117,6 +124,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('livestreams', AdminLivestreamController::class);
         Route::post('/livestreams/{livestream}/go-live', [AdminLivestreamController::class, 'goLive'])->name('livestreams.go-live');
         Route::post('/livestreams/{livestream}/end', [AdminLivestreamController::class, 'endStream'])->name('livestreams.end');
+
+        // Livestream comment replies — admin/pastoral team responds to a
+        // viewer's comment; the reply is stored as a threaded child comment.
+        Route::post('/livestreams/{livestream}/comments/{comment}/reply', [AdminLivestreamController::class, 'replyComment'])
+            ->name('livestreams.comments.reply');
 
         // Resources
         Route::resource('resources', ResourceController::class)->except(['show', 'edit', 'update']);

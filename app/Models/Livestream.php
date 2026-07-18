@@ -76,4 +76,14 @@ class Livestream extends Model
 
         return $this->stream_url;
     }
+
+    public function comments()
+{
+    return $this->hasMany(StreamComment::class);
+}
+
+public function topLevelComments()
+{
+    return $this->comments()->whereNull('parent_id')->with('replies')->orderBy('created_at');
+}
 }

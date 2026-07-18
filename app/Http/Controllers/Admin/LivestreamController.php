@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Livestream;
 use Illuminate\Http\Request;
+use App\Models\StreamComment;
+
 
 class LivestreamController extends Controller
 {
@@ -121,5 +123,23 @@ class LivestreamController extends Controller
                          ->with('success', 'Livestream deleted.');
     }
 
+    public function replyComment(Request $request, Livestream $livestream, StreamComment $comment)
+{
+    $data = $request->validate([
+        'body' => ['required', 'string', 'max:1000'],
+    ]);
+
+    $comment->replies()->create([
+        'livestream_id' => $livestream->id,
+        'body'          => $data['body'],
+        'is_admin'      => true,
+        'admin_id'      => auth()->id(),
+        'name'          => auth()->user()->full_name ?? 'Prayer Team',
+    ]);
+
+    ActivityLog::record('Replied to Comment', "Replied on stream: {$livestream->title}", $livestream);
+
+    return back()->with('success', 'Reply posted.');
+}
 
 }

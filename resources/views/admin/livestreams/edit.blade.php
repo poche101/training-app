@@ -31,6 +31,39 @@
     </div>
     @endif
 
+    {{-- Comments & Prayer Team Replies --}}
+    <div class="admin-card" style="padding:20px; margin-bottom:16px;">
+        <p style="font-size:13px; color:white; font-weight:600; margin-bottom:12px;">
+            Comments
+            <span style="color:#6b7280; font-weight:400;">({{ $livestream->topLevelComments()->count() }})</span>
+        </p>
+
+        @forelse($livestream->topLevelComments()->get() as $comment)
+            <div style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+                <p style="font-size:12px; color:#c9a227; font-weight:600;">{{ $comment->name ?? 'Guest' }}</p>
+                <p style="font-size:13px; color:#d1d5db; margin-top:2px;">{{ $comment->body }}</p>
+
+                @foreach($comment->replies as $reply)
+                    <div style="margin-left:16px; margin-top:8px; padding:8px 12px; background:rgba(212,175,55,0.08); border-left:2px solid #c9a227; border-radius:6px;">
+                        <span style="color:#fbbf24; font-size:11px; font-weight:600;">🙏 {{ $reply->name }}</span>
+                        <p style="color:#e5e7eb; font-size:12px; margin-top:2px;">{{ $reply->body }}</p>
+                    </div>
+                @endforeach
+
+                @if($comment->replies->isEmpty())
+                    <form method="POST" action="{{ route('admin.livestreams.comments.reply', [$livestream, $comment]) }}" style="margin-top:8px; display:flex; gap:8px;">
+                        @csrf
+                        <input type="text" name="body" placeholder="Reply as Prayer Team..." required
+                               style="flex:1; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:6px 10px; font-size:12px; color:white;">
+                        <button style="background:#c9a227; color:#0e192e; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">Reply</button>
+                    </form>
+                @endif
+            </div>
+        @empty
+            <p style="font-size:12px; color:#6b7280;">No comments yet.</p>
+        @endforelse
+    </div>
+
     <div class="admin-card" style="padding:28px;">
         <form method="POST" action="{{ route('admin.livestreams.update', $livestream) }}">
             @csrf @method('PUT')

@@ -117,6 +117,9 @@
                         @if($liveLivestream)
                             <span class="live-badge">● LIVE NOW</span>
                             <span class="text-white font-semibold text-sm sm:text-base">{{ $liveLivestream->title }}</span>
+                            <span id="viewerCount" class="inline-flex items-center gap-1 text-xs text-gray-300 bg-white/5 border border-white/10 rounded-full px-2.5 py-1 whitespace-nowrap">
+                                👀 <span id="viewerCountNumber">–</span> watching
+                            </span>
                         @else
                             <span class="px-2.5 py-1 text-[11px] font-bold tracking-wider text-gold bg-gold/10 border border-gold/20 rounded-md uppercase">Intro Video</span>
                             <span class="text-gray-200 font-semibold text-sm sm:text-base">Prayer Outreach Stream Presentation</span>
@@ -147,6 +150,31 @@
                     @endif
                 </div>
             </div>
+
+            {{-- Live Comments & Prayer Team Responses Panel — only shown
+                 while a stream is actually live, mirroring the "Participate
+                 Live" section above it. --}}
+            @if($liveLivestream)
+            <div id="commentsPanel" class="mt-6 rounded-2xl border border-white/10 bg-[#0e192e]/60 backdrop-blur-md overflow-hidden">
+                <div style="padding:14px 20px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <span class="text-white font-semibold text-sm">💬 Live Comments &amp; Prayer Team Responses</span>
+                </div>
+
+                <div id="commentsList" class="p-4 sm:p-5 space-y-4 max-h-96 overflow-y-auto">
+                    <p style="color:#6b7280; font-size:13px;">Loading comments...</p>
+                </div>
+
+                <form id="commentForm" class="p-4 sm:p-5 border-t border-white/10 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <input type="text" id="commentName" placeholder="Your name" required maxlength="100"
+                               class="sm:col-span-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+                        <input type="text" id="commentBody" placeholder="Share a comment or prayer request..." required maxlength="1000"
+                               class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold transition-colors">
+                    </div>
+                    <button type="submit" class="btn-gold text-sm px-6 py-2.5">Post Comment</button>
+                </form>
+            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -475,6 +503,170 @@
             });
         });
     }
+
+    // Live Viewer Count Engine — heartbeats the server every 10s while this
+    // livestream is active, and updates the "👀 N watching" badge.
+    @if($liveLivestream)
+    (function () {
+        const streamId = {{ $liveLivestream->id }};
+        const heartbeatUrl = "{{ route('stream.heartbeat', $liveLivestream->id) }}";
+        const csrfToken = "{{ csrf_token() }}";
+        const countEl = document.getElementById('viewerCountNumber');
+        let heartbeatTimer = null;
+
+        async function sendHeartbeat() {
+            try {
+                const res = await fetch(heartbeatUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (countEl && typeof data.count !== 'undefined') {
+                    countEl.innerText = data.count;
+                }
+            } catch (e) {
+                // Silent fail — don't disrupt the viewing experience over a
+                // missed heartbeat, the count will just be briefly stale.
+                console.error('Viewer heartbeat failed', e);
+            }
+        }
+
+        function startHeartbeats() {
+            if (heartbeatTimer) return;
+            sendHeartbeat();
+            heartbeatTimer = setInterval(sendHeartbeat, 10000);
+        }
+
+        function stopHeartbeats() {
+            if (!heartbeatTimer) return;
+            clearInterval(heartbeatTimer);
+            heartbeatTimer = null;
+        }
+
+        // Pause heartbeats when the tab is hidden so backgrounded viewers
+        // age out of the count instead of inflating it indefinitely.
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopHeartbeats();
+            } else {
+                startHeartbeats();
+            }
+        });
+
+        startHeartbeats();
+    })();
+    @endif
+
+    // Live Comments Engine — posts a guest comment and polls for updates
+    // (new comments + admin/pastoral team replies) every 10 seconds while
+    // this livestream is active.
+    @if($liveLivestream)
+    (function () {
+        const listUrl  = "{{ route('stream.comments', $liveLivestream->id) }}";
+        const storeUrl = "{{ route('stream.comments.store', $liveLivestream->id) }}";
+        const csrfToken = "{{ csrf_token() }}";
+        const listEl = document.getElementById('commentsList');
+        const form = document.getElementById('commentForm');
+        const nameInput = document.getElementById('commentName');
+        const bodyInput = document.getElementById('commentBody');
+        let commentsTimer = null;
+
+        // Remember the commenter's name across the session for convenience
+        const savedName = sessionStorage.getItem('ofcc_commenter_name');
+        if (savedName) nameInput.value = savedName;
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str ?? '';
+            return div.innerHTML;
+        }
+
+        function renderComments(comments) {
+            if (!comments || !comments.length) {
+                listEl.innerHTML = '<p style="color:#6b7280; font-size:13px;">No comments yet — be the first to share.</p>';
+                return;
+            }
+            listEl.innerHTML = comments.map(c => `
+                <div>
+                    <div style="display:flex; gap:8px; align-items:baseline;">
+                        <span style="color:#c9a227; font-weight:600; font-size:13px;">${escapeHtml(c.name || 'Guest')}</span>
+                    </div>
+                    <p style="color:#d1d5db; font-size:13px; margin-top:2px;">${escapeHtml(c.body)}</p>
+                    ${(c.replies || []).map(r => `
+                        <div style="margin-left:18px; margin-top:8px; padding:8px 12px; background:rgba(212,175,55,0.08); border-left:2px solid #c9a227; border-radius:6px;">
+                            <span style="color:#fbbf24; font-weight:600; font-size:12px;">🙏 ${escapeHtml(r.name || 'Prayer Team')}</span>
+                            <p style="color:#e5e7eb; font-size:13px; margin-top:2px;">${escapeHtml(r.body)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('<hr style="border-color:rgba(255,255,255,0.06); margin:14px 0;">');
+        }
+
+        async function pollComments() {
+            try {
+                const res = await fetch(listUrl, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) return;
+                const data = await res.json();
+                renderComments(data.comments);
+            } catch (e) {
+                console.error('Comment poll failed', e);
+            }
+        }
+
+        function startPolling() {
+            if (commentsTimer) return;
+            pollComments();
+            commentsTimer = setInterval(pollComments, 10000);
+        }
+
+        function stopPolling() {
+            if (!commentsTimer) return;
+            clearInterval(commentsTimer);
+            commentsTimer = null;
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopPolling();
+            } else {
+                startPolling();
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = nameInput.value.trim();
+            const body = bodyInput.value.trim();
+            if (!name || !body) return;
+
+            sessionStorage.setItem('ofcc_commenter_name', name);
+
+            try {
+                const res = await fetch(storeUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ name, body }),
+                });
+                if (res.ok) {
+                    bodyInput.value = '';
+                    pollComments();
+                }
+            } catch (e) {
+                console.error('Post comment failed', e);
+            }
+        });
+
+        startPolling();
+    })();
+    @endif
 </script>
 
 <style>
