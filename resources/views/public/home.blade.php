@@ -9,6 +9,16 @@
 
 @section('content')
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-93TD2CBN19"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-93TD2CBN19');
+</script>
+
 @php
     $liveLivestream = $liveLivestream ?? null;
 @endphp
@@ -97,7 +107,7 @@
 
         {{-- Registration Trigger Button --}}
         <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-            <button type="button" onclick="openRegistrationModal()"
+            <button type="button" id="openRegModalBtn"
                class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
                 🙏 Join Our outreach Fellowship Center
             </button>
@@ -111,14 +121,14 @@
 {{-- INTERACTIVE POPUP MODAL CONTAINING THE UPDATED FORM --}}
 <div id="regModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity bg-slate-950/80 backdrop-blur-sm" onclick="closeRegistrationModal()"></div>
+        <div id="regModalBackdrop" class="fixed inset-0 transition-opacity bg-slate-950/80 backdrop-blur-sm"></div>
 
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
         <div class="inline-block w-full max-w-lg my-8 overflow-hidden text-left align-middle transition-all transform rounded-2xl shadow-2xl border border-gold/30 bg-[#0e192e]">
             <div class="p-6 sm:p-8 relative">
                 {{-- Close Button --}}
-                <button onclick="closeRegistrationModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-2xl font-bold cursor-pointer">&times;</button>
+                <button id="closeRegModalBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-2xl font-bold cursor-pointer">&times;</button>
 
                 @if(session('success'))
                     {{-- SUCCESS VIEW --}}
@@ -197,7 +207,7 @@
                             <p id="copyFeedback" class="text-xs text-emerald-400 mt-3 hidden">Link copied — paste it into your post!</p>
                         </div>
 
-                        <button onclick="closeRegistrationModal()" class="mt-6 btn-gold px-8 py-3 text-sm inline-flex items-center gap-2">
+                        <button id="regModalDoneBtn" class="mt-6 btn-gold px-8 py-3 text-sm inline-flex items-center gap-2">
                             Done
                         </button>
                     </div>
@@ -333,15 +343,42 @@
     // Modal Visibility Mechanics
     function openRegistrationModal() {
         const modal = document.getElementById('regModal');
+        if (!modal) {
+            console.warn('openRegistrationModal: #regModal not found in DOM');
+            return;
+        }
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 
     function closeRegistrationModal() {
         const modal = document.getElementById('regModal');
+        if (!modal) return;
         modal.classList.add('hidden');
         document.body.style.overflow = '';
     }
+
+    // Wire up modal triggers with addEventListener instead of inline onclick —
+    // this avoids silent failures under a strict Content-Security-Policy
+    // (which blocks inline event-handler attributes) and avoids any risk of
+    // ID collisions with other onclick="..." markup elsewhere on the site.
+    document.addEventListener('DOMContentLoaded', () => {
+        const openBtn = document.getElementById('openRegModalBtn');
+        if (openBtn) {
+            openBtn.addEventListener('click', openRegistrationModal);
+        } else {
+            console.warn('openRegModalBtn not found — registration button will not open the modal');
+        }
+
+        const closeBtn = document.getElementById('closeRegModalBtn');
+        if (closeBtn) closeBtn.addEventListener('click', closeRegistrationModal);
+
+        const backdrop = document.getElementById('regModalBackdrop');
+        if (backdrop) backdrop.addEventListener('click', closeRegistrationModal);
+
+        const doneBtn = document.getElementById('regModalDoneBtn');
+        if (doneBtn) doneBtn.addEventListener('click', closeRegistrationModal);
+    });
 
     // Auto-open the registration modal if there's a success message or validation errors to show
     @if(session('success') || $errors->any())
