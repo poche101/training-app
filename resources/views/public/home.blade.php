@@ -37,7 +37,7 @@
         <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
             <button type="button" id="openRegModalBtn"
                class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                🙏 Join Our outreach Fellowship Center
+                🙏 Join Our Online Outreach Community
             </button>
         </div>
 
