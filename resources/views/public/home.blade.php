@@ -29,6 +29,14 @@
     {{-- Decorative Background Gradients --}}
     <div class="absolute inset-0 bg-gradient-to-b from-[#0e192e]/30 via-slate-950 to-[#0a1628]"></div>
 
+      {{-- Registration Trigger Button --}}
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+            <button type="button" id="openRegModalBtn"
+               class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
+                🙏 Join Our outreach Fellowship Center
+            </button>
+        </div>
+
     <div class="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
 
         <h2 class="font-cinzel font-bold text-white text-xl sm:text-2xl mb-6 text-center">
@@ -104,14 +112,6 @@
             </form>
         </div>
         @endif
-
-        {{-- Registration Trigger Button --}}
-        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-            <button type="button" id="openRegModalBtn"
-               class="btn-gold text-base sm:text-lg px-8 py-4 inline-flex justify-center items-center gap-2 shadow-lg shadow-gold/20 hover:scale-[1.02] transition-transform cursor-pointer">
-                🙏 Join Our outreach Fellowship Center
-            </button>
-        </div>
 
     </div>
 
